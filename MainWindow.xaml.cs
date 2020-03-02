@@ -41,7 +41,7 @@ namespace CustomRPC
         {
             Timestamps = new Timestamps()
             {
-                Start = DateTime.Now
+                Start = DateTime.Parse("1 01 2020")
             },
             Details = "Developing great application",
             State = "Playing mode: Always Alone"
