@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:CustomRPC"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
+    <Grid Background="Black">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="74*"/>
             <ColumnDefinition Width="25*"/>
@@ -15,9 +15,10 @@
             <RowDefinition Height="24*"/>
             <RowDefinition Height="11*"/>
         </Grid.RowDefinitions>
+        <Image HorizontalAlignment="Left" Height="206" Margin="10,32,0,0" VerticalAlignment="Top" Width="572" Source="Assets/AssetVizualizer.png"/>
         <Button x:Name="bUpdate" Content="Update Status" Grid.Column="1" HorizontalAlignment="Left" Margin="10,44,0,0" Grid.Row="1" VerticalAlignment="Top" Width="180" Height="32" Click="bUpdate_Click"/>
-        <TextBox x:Name="tbDetails" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="572"/>
-        <TextBox x:Name="tbState" HorizontalAlignment="Left" Height="23" Margin="10,38,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="572"/>
+        <TextBox x:Name="tbDetails" HorizontalAlignment="Left" Height="23" Margin="164,127,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="250"/>
+        <TextBox x:Name="tbState" HorizontalAlignment="Left" Height="23" Margin="164,150,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="210"/>
         <Button x:Name="bApply" Content="Apply Changes" Grid.Column="1" HorizontalAlignment="Left" Margin="10,94,0,0" Grid.Row="1" VerticalAlignment="Top" Width="180" Height="28" Click="bApply_Click"/>
     </Grid>
 </Window>
