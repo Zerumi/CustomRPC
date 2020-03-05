@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CustomRPC"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="CustomRPC by Zerumi" Height="450" Width="800">
     <Grid Background="Black">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="74*"/>
@@ -16,9 +16,25 @@
             <RowDefinition Height="11*"/>
         </Grid.RowDefinitions>
         <Image HorizontalAlignment="Left" Height="206" Margin="10,32,0,0" VerticalAlignment="Top" Width="572" Source="Assets/AssetVizualizer.png"/>
-        <Button x:Name="bUpdate" Content="Update Status" Grid.Column="1" HorizontalAlignment="Left" Margin="10,44,0,0" Grid.Row="1" VerticalAlignment="Top" Width="180" Height="32" Click="bUpdate_Click"/>
-        <TextBox x:Name="tbDetails" HorizontalAlignment="Left" Height="23" Margin="164,127,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="250"/>
-        <TextBox x:Name="tbState" HorizontalAlignment="Left" Height="23" Margin="164,150,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="210"/>
-        <Button x:Name="bApply" Content="Apply Changes" Grid.Column="1" HorizontalAlignment="Left" Margin="10,94,0,0" Grid.Row="1" VerticalAlignment="Top" Width="180" Height="28" Click="bApply_Click"/>
+        <Button x:Name="bUpdateStatus" Content="Update Status" Grid.Column="1" HorizontalAlignment="Left" Margin="10,7,0,0" Grid.Row="1" VerticalAlignment="Top" Width="180" Height="35" Click="bUpdateStatus_Click"/>
+        <TextBox x:Name="tbDetails" HorizontalAlignment="Left" Height="23" Margin="164,127,0,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" Width="250"/>
+        <TextBox x:Name="tbState" HorizontalAlignment="Left" Height="23" Margin="164,150,0,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" Width="210"/>
+        <Button x:Name="bApply" Content="Apply Changes" Grid.Column="1" HorizontalAlignment="Left" Margin="10,87,0,0" Grid.Row="1" VerticalAlignment="Top" Width="180" Height="35" Click="bApply_Click"/>
+        <CheckBox x:Name="cbSpectate" Content="" HorizontalAlignment="Left" Margin="426,118,0,0" VerticalAlignment="Top" Width="13" Checked="cbSpectate_Checked" Unchecked="cbSpectate_Unchecked"/>
+        <CheckBox x:Name="cbAskToJoin" Content="" HorizontalAlignment="Left" Margin="410,165,0,0" VerticalAlignment="Top" Checked="cbAskToJoin_Checked" Unchecked="cbAskToJoin_Unchecked"/>
+        <Label x:Name="lTimestamp" Content="00:00 left" HorizontalAlignment="Left" Margin="161,173,0,0" VerticalAlignment="Top" Height="25" Foreground="White"/>
+        <Label x:Name="lGName" Content="ApplicationID: Loading..." HorizontalAlignment="Left" Margin="161,101,0,0" VerticalAlignment="Top" Width="250" FontWeight="Bold" Foreground="White"/>
+        <TextBox x:Name="tbLargeImgText" HorizontalAlignment="Left" Height="24" Margin="45,58,0,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" Width="92"/>
+        <Rectangle x:Name="LargeImage" Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="101" Margin="39,108,0,0" Stroke="Black" VerticalAlignment="Top" Width="105"/>
+        <Ellipse x:Name="SmallImage" Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="36" Margin="121,185,0,0" Stroke="Black" VerticalAlignment="Top" Width="35"/>
+        <TextBox x:Name="tbSmallImgText" HorizontalAlignment="Left" Height="23" Margin="54,158,0,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" Width="83"/>
+        <Button x:Name="bUpdateRPC" Content="Update ApplicationID" Grid.Column="1" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="180" Height="35"/>
+        <Button x:Name="bUpdateLargeImg" Content="Update Large Image" Grid.Column="1" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" Width="180" Height="35"/>
+        <Button x:Name="bUpdateSmallImg" Content="Update Small Image" Grid.Column="1" HorizontalAlignment="Left" Margin="10,90,0,0" VerticalAlignment="Top" Width="180" Height="35"/>
+        <Button x:Name="bUpdateTimestamp" Content="Update Timestamp" Grid.Column="1" HorizontalAlignment="Left" Margin="10,130,0,0" VerticalAlignment="Top" Width="180" Height="35"/>
+        <Button x:Name="bSetSpectate" Content="Set Spectate code" Grid.Column="1" HorizontalAlignment="Left" Margin="10,170,0,0" VerticalAlignment="Top" Width="180" Height="35"/>
+        <Button x:Name="bSetAskToJoin" Content="Set AskToJoin code" Grid.Column="1" HorizontalAlignment="Left" Margin="10,210,0,0" VerticalAlignment="Top" Width="180" Height="35"/>
+        <Button x:Name="bUpdateConfig" Content="Save status" Grid.Column="1" HorizontalAlignment="Left" Margin="10,250,0,0" VerticalAlignment="Top" Width="180" Height="35" Click="bUpdateConfig_Click"/>
+        <Button x:Name="bLoadStatus" Content="Load Status" Grid.Column="1" HorizontalAlignment="Left" Margin="10,47,0,0" Grid.Row="1" VerticalAlignment="Top" Width="180" Height="35" Click="bLoadStatus_Click"/>
     </Grid>
 </Window>

@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Configuration;
 
 namespace CustomRPC
 {
@@ -29,29 +30,50 @@ namespace CustomRPC
             load();
             timer.Tick += TimerTick;
             timer.Interval = new TimeSpan(0, 0, 1);
+            StartdateTime = DateTime.UtcNow;
+            presence.Timestamps = new Timestamps(StartdateTime);
+            LoadStatus();
         }
 
-        private const string client_id = "684091407836774400";
+        static System.Collections.Specialized.NameValueCollection settings = ConfigurationManager.AppSettings;
+
+        private string client_id = settings.Get("ApplicationID");
 
         DispatcherTimer timer = new DispatcherTimer();
 
         DiscordRpcClient client;
 
-        RichPresence presence = new RichPresence()
+        DateTime StartdateTime = default;
+
+        DateTime EnddateTime = default;
+
+        RichPresence presence = new RichPresence();
+
+        private void UpdatePresence(DateTime StartTime, string details = "", string state = "", string LargeImg = "", string LargeImgText = "", string SmallImg = "", string SmallImgText = "")
         {
-            Timestamps = new Timestamps()
+            presence = new RichPresence()
             {
-                Start = DateTime.Parse("1 01 2020")
-            },
-            Details = "Developing great application",
-            State = "Playing mode: Always Alone"
-        };
+                Assets = new Assets()
+                {
+                    LargeImageKey = LargeImg,
+                    LargeImageText = LargeImgText,
+                    SmallImageKey = SmallImg,
+                    SmallImageText = SmallImgText
+                },
+                Details = details,
+                State = state,
+                Timestamps = new Timestamps()
+                {
+                    Start = StartTime
+                }
+            };
+        }
 
         public void load()
         {
             client = new DiscordRpcClient(client_id)
             {
-                SkipIdenticalPresence = false
+                SkipIdenticalPresence = true
             };
 
             client.OnReady += onReady;
@@ -91,15 +113,73 @@ namespace CustomRPC
             updateStatus();
         }
 
-        private void bUpdate_Click(object sender, RoutedEventArgs e)
+        private void bUpdateStatus_Click(object sender, RoutedEventArgs e)
         {
             updateStatus();
         }
 
         private void bApply_Click(object sender, RoutedEventArgs e)
         {
-            presence.Details = tbDetails.Text;
-            presence.State = tbState.Text;
+            UpdatePresence(StartdateTime, tbDetails.Text, tbState.Text, "", tbLargeImgText.Text, "", tbSmallImgText.Text);
+        }
+
+        private void cbSpectate_Checked(object sender, RoutedEventArgs e)
+        {
+            //settings.Set("boolSpectate", "True");
+            bSetSpectate.IsEnabled = true;
+        }
+
+        private void cbAskToJoin_Checked(object sender, RoutedEventArgs e)
+        {
+            //settings.Set("boolAskToJoin", "True");
+            bSetAskToJoin.IsEnabled = true;
+        }
+
+        private void cbSpectate_Unchecked(object sender, RoutedEventArgs e)
+        {
+            //settings.Set("boolSpectate", "False");
+            bSetSpectate.IsEnabled = false;
+        }
+
+        private void cbAskToJoin_Unchecked(object sender, RoutedEventArgs e)
+        {
+            //settings.Set("boolAskToJoin", "False");
+            bSetAskToJoin.IsEnabled = false;
+        }
+
+        private void bLoadStatus_Click(object sender, RoutedEventArgs e)
+        {
+            LoadStatus();
+        }
+
+        private void LoadStatus()
+        {
+            tbDetails.Text = settings.Get("Details");
+            tbState.Text = settings.Get("State");
+            bSetSpectate.IsEnabled = Convert.ToBoolean(settings.Get("boolSpectate"));
+            bSetAskToJoin.IsEnabled = Convert.ToBoolean(settings.Get("boolAskToJoin"));
+            cbSpectate.IsChecked = Convert.ToBoolean(settings.Get("boolSpectate"));
+            cbAskToJoin.IsChecked = Convert.ToBoolean(settings.Get("boolAskToJoin"));
+            tbSmallImgText.Text = settings.Get("SmallImageText");
+            tbLargeImgText.Text = settings.Get("LargeImageText");
+        }
+
+        private void SaveStatus()
+        {
+            settings.Set("ApplicationID", client.ApplicationID);
+            settings.Set("Details", tbDetails.Text);
+            settings.Set("State", tbState.Text);
+            settings.Set("boolSpectate", Convert.ToString(cbSpectate.IsChecked.GetValueOrDefault()));
+            settings.Set("boolAskToJoin", Convert.ToString(cbAskToJoin.IsChecked.GetValueOrDefault()));
+            settings.Set("LargeImage", "");
+            settings.Set("LargeImageText", tbLargeImgText.Text);
+            settings.Set("SmallImage", "");
+            settings.Set("SmallImageText", tbSmallImgText.Text);
+        }
+
+        private void bUpdateConfig_Click(object sender, RoutedEventArgs e)
+        {
+            SaveStatus();
         }
     }
 }
