@@ -31,9 +31,8 @@ namespace CustomRPC
             load();
             timer.Tick += TimerTick;
             timer.Interval = new TimeSpan(0, 0, 1);
-            StartdateTime = DateTime.UtcNow;
-            presence.Timestamps = new Timestamps(StartdateTime);
             LoadStatus();
+            UpdatePresence(TimeStamp, tbDetails.Text, tbState.Text, LargeImg, tbLargeImgText.Text, SmallImg, tbSmallImgText.Text);
         }
 
         static System.Collections.Specialized.NameValueCollection settings = ConfigurationManager.AppSettings;
@@ -44,19 +43,21 @@ namespace CustomRPC
 
         public DiscordRpcClient client;
 
-        public DateTime StartdateTime = default;
+        public DateTime TimeStamp = default;
 
-        public DateTime EnddateTime = default;
+        public string sTimeStamp = null;
 
         public string LargeImg = settings.Get("LargeImage");
 
         public string SmallImg = settings.Get("SmallImage");
 
+        public bool isStartTime = true;
+
         string sendname = null;
 
         RichPresence presence = new RichPresence();
 
-        private void UpdatePresence(DateTime StartTime, string details = "", string state = "", string LargeImg = "", string LargeImgText = "", string SmallImg = "", string SmallImgText = "")
+        private void UpdatePresence(DateTime Timestamp, string details = "", string state = "", string LargeImg = "", string LargeImgText = "", string SmallImg = "", string SmallImgText = "")
         {
             presence = new RichPresence()
             {
@@ -68,12 +69,22 @@ namespace CustomRPC
                     SmallImageText = SmallImgText
                 },
                 Details = details,
-                State = state,
-                Timestamps = new Timestamps()
-                {
-                    Start = StartTime
-                }
+                State = state
             };
+            if (DateTime.UtcNow.Subtract(TimeStamp).TotalSeconds > 0)
+            {
+                presence.Timestamps = new Timestamps()
+                {
+                    Start = Timestamp
+                };
+            }
+            else
+            {
+                presence.Timestamps = new Timestamps()
+                {
+                    End = Timestamp
+                };
+            }
         }
 
         public void load()
@@ -117,14 +128,28 @@ namespace CustomRPC
 
         private void TimerTick(object sender, EventArgs e)
         {
-            updateStatus();
-            if (EnddateTime == default)
+            if (DateTime.UtcNow.Subtract(TimeStamp).TotalSeconds > 0)
             {
-                lTimestamp.Content = $"{(Convert.ToInt32(DateTime.UtcNow.Subtract(StartdateTime).Hours) == 0? Convert.ToString(Convert.ToInt32(DateTime.UtcNow.Subtract(StartdateTime).Minutes)) : Convert.ToString(Convert.ToString(Convert.ToInt32(DateTime.UtcNow.Subtract(StartdateTime).Hours))) + ":" + Convert.ToString(Convert.ToInt32(DateTime.UtcNow.Subtract(StartdateTime).Minutes)))}:{Convert.ToInt32(DateTime.UtcNow.Subtract(StartdateTime).Seconds)} elapsed";
+                presence.Timestamps = new Timestamps()
+                {
+                    Start = TimeStamp
+                };
             }
             else
             {
-                //lTimestamp.Content = $"{(DateTime.Now.Subtract(StartdateTime).TotalHours == 0 ? Convert.ToString(DateTime.Now.Subtract(StartdateTime).TotalMinutes) : DateTime.Now.Subtract(StartdateTime).TotalHours + ":" + DateTime.Now.Subtract(StartdateTime).TotalMinutes)}:{DateTime.Now.Subtract(StartdateTime).TotalSeconds} left";
+                presence.Timestamps = new Timestamps()
+                {
+                    End = TimeStamp
+                };
+            }
+            updateStatus();
+            if (DateTime.UtcNow.Subtract(TimeStamp).TotalSeconds > 0)
+            {
+                lTimestamp.Content = $"{(Convert.ToInt32(DateTime.UtcNow.Subtract(TimeStamp).Hours) == 0? Convert.ToString(Convert.ToInt32(DateTime.UtcNow.Subtract(TimeStamp).Minutes)) : Convert.ToString(Convert.ToString(Convert.ToInt32(DateTime.UtcNow.Subtract(TimeStamp).Hours))) + ":" + Convert.ToString(Convert.ToInt32(DateTime.UtcNow.Subtract(TimeStamp).Minutes)))}:{Convert.ToInt32(DateTime.UtcNow.Subtract(TimeStamp).Seconds)} elapsed";
+            }
+            else
+            {
+                lTimestamp.Content = $"{(Convert.ToInt32(TimeStamp.Subtract(DateTime.UtcNow).Hours) == 0 ? Convert.ToString(Convert.ToInt32(TimeStamp.Subtract(DateTime.UtcNow).Minutes)) : Convert.ToString(Convert.ToString(Convert.ToInt32(TimeStamp.Subtract(DateTime.UtcNow).Hours))) + ":" + Convert.ToString(Convert.ToInt32(TimeStamp.Subtract(DateTime.UtcNow).Minutes)))}:{Convert.ToInt32(TimeStamp.Subtract(DateTime.UtcNow).Seconds)} left";
             }
         }
 
@@ -135,7 +160,7 @@ namespace CustomRPC
 
         private void bApply_Click(object sender, RoutedEventArgs e)
         {
-            UpdatePresence(StartdateTime, tbDetails.Text, tbState.Text, LargeImg, tbLargeImgText.Text, SmallImg, tbSmallImgText.Text);
+            UpdatePresence(TimeStamp, tbDetails.Text, tbState.Text, LargeImg, tbLargeImgText.Text, SmallImg, tbSmallImgText.Text);
         }
 
         private void cbSpectate_Checked(object sender, RoutedEventArgs e)
@@ -180,6 +205,8 @@ namespace CustomRPC
             tbLargeImgText.Text = settings.Get("LargeImageText");
             LargeImg = settings.Get("LargeImage");
             SmallImg = settings.Get("SmallImage");
+            sTimeStamp = settings.Get("Timestamp");
+            TimeStamp = DateTime.Parse(sTimeStamp).ToUniversalTime();
         }
 
         private void SaveStatus()
@@ -193,6 +220,7 @@ namespace CustomRPC
             settings.Set("LargeImageText", tbLargeImgText.Text);
             settings.Set("SmallImage", SmallImg);
             settings.Set("SmallImageText", tbSmallImgText.Text);
+            settings.Set("Timestamp", sTimeStamp);
             var appSettings = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             appSettings.AppSettings.Settings.Clear();
             for (int i = 0; i < settings.Count; i++)

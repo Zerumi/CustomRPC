@@ -24,7 +24,16 @@ namespace CustomRPC
         }
         public static void Timestamp(MainWindow window)
         {
-            
+            var arg = window.tbArgument.Text;
+            try
+            {
+                window.TimeStamp = DateTime.Parse(arg).ToUniversalTime();
+                window.sTimeStamp = arg;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
         public static void Spectate(MainWindow window)
         {
