@@ -51,6 +51,12 @@ namespace CustomRPC
 
         public string SmallImg = settings.Get("SmallImage");
 
+        public string PartyID = settings.Get("PartyID");
+
+        public string SpectateCode = settings.Get("Spectate");
+
+        public string AskToJoinCode = settings.Get("AskToJoin");
+
         public bool isStartTime = true;
 
         string sendname = null;
@@ -163,30 +169,6 @@ namespace CustomRPC
             UpdatePresence(TimeStamp, tbDetails.Text, tbState.Text, LargeImg, tbLargeImgText.Text, SmallImg, tbSmallImgText.Text);
         }
 
-        private void cbSpectate_Checked(object sender, RoutedEventArgs e)
-        {
-            //settings.Set("boolSpectate", "True");
-            bSetSpectate.IsEnabled = true;
-        }
-
-        private void cbAskToJoin_Checked(object sender, RoutedEventArgs e)
-        {
-            //settings.Set("boolAskToJoin", "True");
-            bSetAskToJoin.IsEnabled = true;
-        }
-
-        private void cbSpectate_Unchecked(object sender, RoutedEventArgs e)
-        {
-            //settings.Set("boolSpectate", "False");
-            bSetSpectate.IsEnabled = false;
-        }
-
-        private void cbAskToJoin_Unchecked(object sender, RoutedEventArgs e)
-        {
-            //settings.Set("boolAskToJoin", "False");
-            bSetAskToJoin.IsEnabled = false;
-        }
-
         private void bLoadStatus_Click(object sender, RoutedEventArgs e)
         {
             LoadStatus();
@@ -197,8 +179,6 @@ namespace CustomRPC
             lGName.Content = "ApplicationID: " + settings.Get("ApplicationID");
             tbDetails.Text = settings.Get("Details");
             tbState.Text = settings.Get("State");
-            bSetSpectate.IsEnabled = Convert.ToBoolean(settings.Get("boolSpectate"));
-            bSetAskToJoin.IsEnabled = Convert.ToBoolean(settings.Get("boolAskToJoin"));
             cbSpectate.IsChecked = Convert.ToBoolean(settings.Get("boolSpectate"));
             cbAskToJoin.IsChecked = Convert.ToBoolean(settings.Get("boolAskToJoin"));
             tbSmallImgText.Text = settings.Get("SmallImageText");
@@ -221,6 +201,9 @@ namespace CustomRPC
             settings.Set("SmallImage", SmallImg);
             settings.Set("SmallImageText", tbSmallImgText.Text);
             settings.Set("Timestamp", sTimeStamp);
+            settings.Set("PartyID", PartyID);
+            settings.Set("Spectate", SpectateCode);
+            settings.Set("AskToJoin", AskToJoinCode);
             var appSettings = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             appSettings.AppSettings.Settings.Clear();
             for (int i = 0; i < settings.Count; i++)
@@ -232,7 +215,7 @@ namespace CustomRPC
 
         private void UpdateArg(object sender, string sendname)
         {
-            lTitle.Content = (sender as Button).Content;
+            lTitle.Content = (sender as MenuItem).Header;
             tbArgument.Visibility = Visibility.Visible;
             bOK.Visibility = Visibility.Visible;
             this.sendname = sendname;
@@ -261,6 +244,11 @@ namespace CustomRPC
         private void bUpdateTimestamp_Click(object sender, RoutedEventArgs e)
         {
             UpdateArg(sender, "Timestamp");
+        }
+
+        private void bUpdatePartyID_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateArg(sender, "PartyID");
         }
 
         private void bSetSpectate_Click(object sender, RoutedEventArgs e)

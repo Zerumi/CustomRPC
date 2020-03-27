@@ -35,9 +35,13 @@ namespace CustomRPC
                 MessageBox.Show(ex.Message);
             }
         }
+        public static void PartyID(MainWindow window)
+        {
+            
+        }
         public static void Spectate(MainWindow window)
         {
-
+            
         }
         public static void AskToJoin(MainWindow window)
         {
