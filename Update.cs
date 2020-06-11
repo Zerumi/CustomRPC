@@ -37,15 +37,15 @@ namespace CustomRPC
         }
         public static void PartyID(MainWindow window)
         {
-            
+            window.PartyID = window.tbArgument.Text;
         }
         public static void Spectate(MainWindow window)
         {
-            
+            window.SpectateCode = window.tbArgument.Text;
         }
         public static void AskToJoin(MainWindow window)
         {
-
+            window.AskToJoinCode = window.tbArgument.Text;
         }
     }
 }

@@ -63,8 +63,14 @@ namespace CustomRPC
 
         RichPresence presence = new RichPresence();
 
-        private void UpdatePresence(DateTime Timestamp, string details = "", string state = "", string LargeImg = "", string LargeImgText = "", string SmallImg = "", string SmallImgText = "")
+        private void UpdatePresence(DateTime Timestamp, string details = "", string state = "", string LargeImg = "", string LargeImgText = "", string SmallImg = "", string SmallImgText = "", string Party = "", string Spectate = "", string AskToJoin = "")
         {
+            client.RegisterUriScheme(null, PartyID);
+
+            client.RegisterUriScheme(null, SpectateCode);
+
+            client.RegisterUriScheme(null, AskToJoinCode);
+
             presence = new RichPresence()
             {
                 Assets = new Assets()
@@ -75,7 +81,18 @@ namespace CustomRPC
                     SmallImageText = SmallImgText
                 },
                 Details = details,
-                State = state
+                State = state,
+                Party = new Party()
+                {
+                    ID = Party,
+                    Size = Int32.ParseOrDefault(partySize.Text),
+                    Max = Int32.ParseOrDefault(partySizeMax.Text)
+                },
+                Secrets = new Secrets()
+                {
+                    JoinSecret = AskToJoin,
+                    SpectateSecret = Spectate
+                }
             };
             if (DateTime.UtcNow.Subtract(TimeStamp).TotalSeconds > 0)
             {
@@ -97,7 +114,7 @@ namespace CustomRPC
         {
             client = new DiscordRpcClient(client_id)
             {
-                SkipIdenticalPresence = true
+                SkipIdenticalPresence = true,
             };
 
             client.OnReady += onReady;
@@ -166,7 +183,7 @@ namespace CustomRPC
 
         private void bApply_Click(object sender, RoutedEventArgs e)
         {
-            UpdatePresence(TimeStamp, tbDetails.Text, tbState.Text, LargeImg, tbLargeImgText.Text, SmallImg, tbSmallImgText.Text);
+            UpdatePresence(TimeStamp, tbDetails.Text, tbState.Text, LargeImg, tbLargeImgText.Text, SmallImg, tbSmallImgText.Text, PartyID, SpectateCode, AskToJoinCode);
         }
 
         private void bLoadStatus_Click(object sender, RoutedEventArgs e)
@@ -179,14 +196,17 @@ namespace CustomRPC
             lGName.Content = "ApplicationID: " + settings.Get("ApplicationID");
             tbDetails.Text = settings.Get("Details");
             tbState.Text = settings.Get("State");
-            cbSpectate.IsChecked = Convert.ToBoolean(settings.Get("boolSpectate"));
-            cbAskToJoin.IsChecked = Convert.ToBoolean(settings.Get("boolAskToJoin"));
             tbSmallImgText.Text = settings.Get("SmallImageText");
             tbLargeImgText.Text = settings.Get("LargeImageText");
             LargeImg = settings.Get("LargeImage");
             SmallImg = settings.Get("SmallImage");
             sTimeStamp = settings.Get("Timestamp");
             TimeStamp = DateTime.Parse(sTimeStamp).ToUniversalTime();
+            PartyID = settings.Get("PartyID");
+            partySize.Text = settings.Get("PartySize");
+            partySizeMax.Text = settings.Get("PartySizeMax");
+            SpectateCode = settings.Get("Spectate");
+            AskToJoinCode = settings.Get("AskToJoin");
         }
 
         private void SaveStatus()
@@ -194,14 +214,14 @@ namespace CustomRPC
             settings.Set("ApplicationID", client_id);
             settings.Set("Details", tbDetails.Text);
             settings.Set("State", tbState.Text);
-            settings.Set("boolSpectate", Convert.ToString(cbSpectate.IsChecked.GetValueOrDefault()));
-            settings.Set("boolAskToJoin", Convert.ToString(cbAskToJoin.IsChecked.GetValueOrDefault()));
             settings.Set("LargeImage", LargeImg);
             settings.Set("LargeImageText", tbLargeImgText.Text);
             settings.Set("SmallImage", SmallImg);
             settings.Set("SmallImageText", tbSmallImgText.Text);
             settings.Set("Timestamp", sTimeStamp);
             settings.Set("PartyID", PartyID);
+            settings.Set("PartySize", partySize.Text);
+            settings.Set("PartySizeMax", partySizeMax.Text);
             settings.Set("Spectate", SpectateCode);
             settings.Set("AskToJoin", AskToJoinCode);
             var appSettings = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
@@ -280,6 +300,21 @@ namespace CustomRPC
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
+            }
+        }
+
+        struct Int32
+        {
+            public static int ParseOrDefault(string s)
+            {
+                if (int.TryParse(s, out int result))
+                {
+                    return result;
+                }
+                else
+                {
+                    return 0;
+                }
             }
         }
     }

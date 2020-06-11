@@ -17,9 +17,7 @@
         </Grid.RowDefinitions>
         <Image HorizontalAlignment="Left" Height="206" Margin="10,15,0,0" VerticalAlignment="Top" Width="572" Source="Assets/AssetVizualizer.png" Grid.Row="1"/>
         <TextBox x:Name="tbDetails" HorizontalAlignment="Left" Height="23" Margin="164,110,0,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" Width="250" Grid.Row="1"/>
-        <TextBox x:Name="tbState" HorizontalAlignment="Left" Height="23" Margin="164,133,0,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" Width="210" Grid.Row="1"/>
-        <CheckBox x:Name="cbSpectate" Content="" HorizontalAlignment="Left" Margin="426,101,0,0" VerticalAlignment="Top" Width="13" Grid.Row="1" Height="16"/>
-        <CheckBox x:Name="cbAskToJoin" Content="" HorizontalAlignment="Left" Margin="410,148,0,0" VerticalAlignment="Top" Grid.Row="1" Height="16" Width="17"/>
+        <TextBox x:Name="tbState" HorizontalAlignment="Left" Height="23" Margin="164,133,0,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" Width="190" Grid.Row="1"/>
         <Label x:Name="lTimestamp" Content="00:00 elapsed" HorizontalAlignment="Left" Margin="161,156,0,0" VerticalAlignment="Top" Height="25" Foreground="White" Width="213" Grid.Row="1"/>
         <Label x:Name="lGName" Content="ApplicationID: Loading..." HorizontalAlignment="Left" Margin="161,84,0,0" VerticalAlignment="Top" Width="250" FontWeight="Bold" Foreground="White" Grid.Row="1" Height="26"/>
         <TextBox x:Name="tbLargeImgText" HorizontalAlignment="Left" Height="24" Margin="45,41,0,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" Width="92" Grid.Row="1"/>
@@ -35,7 +33,7 @@
                 <MenuItem Header="Update Large Image" Click="bUpdateLargeImg_Click"/>
                 <MenuItem Header="Update Small Image" Click="bUpdateSmallImg_Click"/>
                 <MenuItem Header="Update Timestamp" Click="bUpdateTimestamp_Click"/>
-                <MenuItem Header="Update PartyID"/>
+                <MenuItem Header="Update PartyID" Click="bUpdatePartyID_Click"/>
                 <MenuItem Header="Update Spectate code" Click="bSetSpectate_Click"/>
                 <MenuItem Header="Update Ask to Join code" Click="bSetAskToJoin_Click"/>
             </MenuItem>
@@ -45,5 +43,7 @@
             </MenuItem>
         </Menu>
         <Button Content="Apply changes" HorizontalAlignment="Left" Margin="467,186,0,0" Grid.Row="1" VerticalAlignment="Top" Width="100" Height="26" Click="bApply_Click"/>
+        <TextBox x:Name="partySize" HorizontalAlignment="Left" Height="23" Margin="362,133,0,0" Grid.Row="1" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="14"/>
+        <TextBox x:Name="partySizeMax" HorizontalAlignment="Left" Height="23" Margin="391,133,0,0" Grid.Row="1" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="23"/>
     </Grid>
 </Window>
