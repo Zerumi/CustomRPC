@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CustomRPC"
         mc:Ignorable="d"
-        Title="CustomRPC by Zerumi" Height="450" Width="603" ResizeMode="CanMinimize">
+        Title="CustomRPC by Zerumi" Height="450" Width="603" ResizeMode="CanMinimize" Closing="Window_Closing">
     <Grid Background="Black">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -25,7 +25,7 @@
         <Ellipse x:Name="SmallImage" Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="36" Margin="121,168,0,0" Stroke="Black" VerticalAlignment="Top" Width="35" Grid.Row="1"/>
         <TextBox x:Name="tbSmallImgText" HorizontalAlignment="Left" Height="23" Margin="54,141,0,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" Width="83" Grid.Row="1"/>
         <Label x:Name="lTitle" Content="" HorizontalAlignment="Left" Margin="6,10,0,0" Grid.Row="2" VerticalAlignment="Top" Foreground="White" Height="27" Width="576"/>
-        <TextBox x:Name="tbArgument" HorizontalAlignment="Left" Height="24" Margin="10,42,0,0" Grid.Row="2" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" Width="572" Visibility="Hidden"/>
+        <TextBox x:Name="tbArgument" HorizontalAlignment="Left" Height="24" Margin="10,42,0,0" Grid.Row="2" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" Width="572" Visibility="Hidden" KeyDown="tbArgument_KeyDown"/>
         <Button x:Name="bOK" Content="OK" HorizontalAlignment="Left" Margin="10,71,0,0" Grid.Row="2" VerticalAlignment="Top" Width="100" Height="30" Click="bOK_Click" Visibility="Hidden"/>
         <Menu HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <MenuItem Header="RPC">

@@ -17,6 +17,9 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Configuration;
 using System.Reflection;
+using System.Windows.Forms;
+using CustomRPC.Properties;
+using System.Drawing;
 
 namespace CustomRPC
 {
@@ -27,12 +30,23 @@ namespace CustomRPC
     {
         public MainWindow()
         {
+            notifyIcon1.Visible = true;
+            notifyIcon1.ContextMenu = new System.Windows.Forms.ContextMenu();
+            var ExitItem = new System.Windows.Forms.MenuItem() { Text = "Exit" };
+            ExitItem.Click += ExitItem_Click;
+            notifyIcon1.ContextMenu.MenuItems.Add(ExitItem);
+            notifyIcon1.DoubleClick += notifyIcon1_MouseDoubleClick;
             InitializeComponent();
             load();
             timer.Tick += TimerTick;
             timer.Interval = new TimeSpan(0, 0, 1);
             LoadStatus();
             UpdatePresence(TimeStamp, tbDetails.Text, tbState.Text, LargeImg, tbLargeImgText.Text, SmallImg, tbSmallImgText.Text);
+        }
+
+        private void ExitItem_Click(object sender, EventArgs e)
+        {
+            System.Windows.Application.Current.Shutdown();
         }
 
         static System.Collections.Specialized.NameValueCollection settings = ConfigurationManager.AppSettings;
@@ -124,7 +138,7 @@ namespace CustomRPC
             client.OnConnectionFailed += (_, __) =>
             {
                 client.Deinitialize();
-                MessageBox.Show("Клиент был отключен: " + __.FailedPipe);
+                System.Windows.MessageBox.Show("Клиент был отключен: " + __.FailedPipe);
             };
 
             client.Initialize();
@@ -132,7 +146,7 @@ namespace CustomRPC
 
         private void Client_OnError(object sender, ErrorMessage args)
         {
-            MessageBox.Show("Что-то пошло не так...\n" + args.Message);
+            System.Windows.MessageBox.Show("Что-то пошло не так...\n" + args.Message);
         }
 
         private void onReady(object _, ReadyMessage __)
@@ -149,29 +163,51 @@ namespace CustomRPC
             client.SetPresence(presence);
         }
 
+        bool? iselapsed = null;
         private void TimerTick(object sender, EventArgs e)
         {
             if (DateTime.UtcNow.Subtract(TimeStamp).TotalSeconds > 0)
             {
-                presence.Timestamps = new Timestamps()
+                if (!iselapsed.HasValue)
                 {
-                    Start = TimeStamp
-                };
+                    iselapsed = true;
+                    presence.Timestamps = new Timestamps()
+                    {
+                        Start = TimeStamp
+                    };
+                    updateStatus();
+                }
+                else if (!iselapsed.Value) // remaining
+                {
+                    iselapsed = true;
+                    presence.Timestamps = new Timestamps()
+                    {
+                        Start = TimeStamp
+                    };
+                    updateStatus();
+                }
+                lTimestamp.Content = $"{(Convert.ToInt32(DateTime.UtcNow.Subtract(TimeStamp).Hours) == 0 ? Convert.ToString(Convert.ToInt32(DateTime.UtcNow.Subtract(TimeStamp).Minutes)) : Convert.ToString(Convert.ToString(Convert.ToInt32(DateTime.UtcNow.Subtract(TimeStamp).Hours))) + ":" + Convert.ToString(Convert.ToInt32(DateTime.UtcNow.Subtract(TimeStamp).Minutes)))}:{Convert.ToInt32(DateTime.UtcNow.Subtract(TimeStamp).Seconds)} elapsed";
             }
             else
             {
-                presence.Timestamps = new Timestamps()
+                if (!iselapsed.HasValue)
                 {
-                    End = TimeStamp
-                };
-            }
-            updateStatus();
-            if (DateTime.UtcNow.Subtract(TimeStamp).TotalSeconds > 0)
-            {
-                lTimestamp.Content = $"{(Convert.ToInt32(DateTime.UtcNow.Subtract(TimeStamp).Hours) == 0? Convert.ToString(Convert.ToInt32(DateTime.UtcNow.Subtract(TimeStamp).Minutes)) : Convert.ToString(Convert.ToString(Convert.ToInt32(DateTime.UtcNow.Subtract(TimeStamp).Hours))) + ":" + Convert.ToString(Convert.ToInt32(DateTime.UtcNow.Subtract(TimeStamp).Minutes)))}:{Convert.ToInt32(DateTime.UtcNow.Subtract(TimeStamp).Seconds)} elapsed";
-            }
-            else
-            {
+                    iselapsed = false;
+                    presence.Timestamps = new Timestamps()
+                    {
+                        End = TimeStamp
+                    };
+                    updateStatus();
+                }
+                else if (iselapsed.Value) // elapsed
+                {
+                    iselapsed = false;
+                    presence.Timestamps = new Timestamps()
+                    {
+                        End = TimeStamp
+                    };
+                    updateStatus();
+                }
                 lTimestamp.Content = $"{(Convert.ToInt32(TimeStamp.Subtract(DateTime.UtcNow).Hours) == 0 ? Convert.ToString(Convert.ToInt32(TimeStamp.Subtract(DateTime.UtcNow).Minutes)) : Convert.ToString(Convert.ToString(Convert.ToInt32(TimeStamp.Subtract(DateTime.UtcNow).Hours))) + ":" + Convert.ToString(Convert.ToInt32(TimeStamp.Subtract(DateTime.UtcNow).Minutes)))}:{Convert.ToInt32(TimeStamp.Subtract(DateTime.UtcNow).Seconds)} left";
             }
         }
@@ -235,7 +271,7 @@ namespace CustomRPC
 
         private void UpdateArg(object sender, string sendname)
         {
-            lTitle.Content = (sender as MenuItem).Header;
+            lTitle.Content = (sender as System.Windows.Controls.MenuItem).Header;
             tbArgument.Visibility = Visibility.Visible;
             bOK.Visibility = Visibility.Visible;
             this.sendname = sendname;
@@ -299,8 +335,19 @@ namespace CustomRPC
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                System.Windows.MessageBox.Show(ex.ToString());
             }
+        }
+
+        private NotifyIcon notifyIcon1 = new NotifyIcon()
+        {
+            Icon = new Icon(SystemIcons.Application, 40, 40)
+        };
+
+        private void notifyIcon1_MouseDoubleClick(object sender, EventArgs e)
+        {
+            Show();
+            WindowState = WindowState.Normal;
         }
 
         struct Int32
@@ -314,6 +361,37 @@ namespace CustomRPC
                 else
                 {
                     return 0;
+                }
+            }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Hide();
+            e.Cancel = true;
+        }
+
+        private void tbArgument_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                try
+                {
+                    lTitle.Content = "";
+                    tbArgument.Visibility = Visibility.Hidden;
+                    bOK.Visibility = Visibility.Hidden;
+                    var method = AppDomain.CurrentDomain.GetAssemblies()
+        .Select(x => x.GetTypes())
+        .SelectMany(x => x)
+        .Where(x => x.Namespace == "CustomRPC")
+        .Where(c => c.GetMethod(sendname) != null)
+        .Select(c => c.GetMethod(sendname)).First();
+                    method.Invoke(null, new object[] { this });
+                    tbArgument.Text = "";
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show(ex.ToString());
                 }
             }
         }
