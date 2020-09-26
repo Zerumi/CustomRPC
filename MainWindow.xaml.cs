@@ -1,24 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using DiscordRPC;
 using DiscordRPC.Message;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Configuration;
-using System.Reflection;
 using System.Windows.Forms;
-using CustomRPC.Properties;
 using System.Drawing;
 
 namespace CustomRPC
@@ -161,11 +149,14 @@ namespace CustomRPC
                 return;
 
             client.SetPresence(presence);
+
+            updatelabel.Content = $"Последнее обновление статуса на стороне Discord: {DateTime.Now}";
         }
 
         bool? iselapsed = null;
         private void TimerTick(object sender, EventArgs e)
         {
+            timelabel.Content = DateTime.Now.ToString();
             if (DateTime.UtcNow.Subtract(TimeStamp).TotalSeconds > 0)
             {
                 if (!iselapsed.HasValue)
@@ -212,14 +203,10 @@ namespace CustomRPC
             }
         }
 
-        private void bUpdateStatus_Click(object sender, RoutedEventArgs e)
-        {
-            updateStatus();
-        }
-
         private void bApply_Click(object sender, RoutedEventArgs e)
         {
             UpdatePresence(TimeStamp, tbDetails.Text, tbState.Text, LargeImg, tbLargeImgText.Text, SmallImg, tbSmallImgText.Text, PartyID, SpectateCode, AskToJoinCode);
+            updateStatus();
         }
 
         private void bLoadStatus_Click(object sender, RoutedEventArgs e)
@@ -321,7 +308,7 @@ namespace CustomRPC
         {
             try
             {
-                lTitle.Content = "";
+                lTitle.Content = string.Empty;
                 tbArgument.Visibility = Visibility.Hidden;
                 bOK.Visibility = Visibility.Hidden;
                 var method = AppDomain.CurrentDomain.GetAssemblies()
@@ -331,7 +318,7 @@ namespace CustomRPC
     .Where(c => c.GetMethod(sendname) != null)
     .Select(c => c.GetMethod(sendname)).First();
                 method.Invoke(null, new object[] { this });
-                tbArgument.Text = "";
+                tbArgument.Text = string.Empty;
             }
             catch (Exception ex)
             {
@@ -377,7 +364,7 @@ namespace CustomRPC
             {
                 try
                 {
-                    lTitle.Content = "";
+                    lTitle.Content = string.Empty;
                     tbArgument.Visibility = Visibility.Hidden;
                     bOK.Visibility = Visibility.Hidden;
                     var method = AppDomain.CurrentDomain.GetAssemblies()
@@ -387,13 +374,23 @@ namespace CustomRPC
         .Where(c => c.GetMethod(sendname) != null)
         .Select(c => c.GetMethod(sendname)).First();
                     method.Invoke(null, new object[] { this });
-                    tbArgument.Text = "";
+                    tbArgument.Text = string.Empty;
                 }
                 catch (Exception ex)
                 {
                     System.Windows.MessageBox.Show(ex.ToString());
                 }
             }
+        }
+
+        private void MenuItem_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MenuItem_Unchecked(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

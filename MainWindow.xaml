@@ -45,5 +45,7 @@
         <Button Content="Apply changes" HorizontalAlignment="Left" Margin="467,186,0,0" Grid.Row="1" VerticalAlignment="Top" Width="100" Height="26" Click="bApply_Click"/>
         <TextBox x:Name="partySize" HorizontalAlignment="Left" Height="23" Margin="362,133,0,0" Grid.Row="1" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="14"/>
         <TextBox x:Name="partySizeMax" HorizontalAlignment="Left" Height="23" Margin="391,133,0,0" Grid.Row="1" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="23"/>
+        <Label x:Name="updatelabel" Content="Последнее обновление статуса на стороне Discord: Не обновлялось" HorizontalAlignment="Left" Height="25" Margin="164,15.2,0,0" Grid.Row="1" VerticalAlignment="Top" Width="403" HorizontalContentAlignment="Right" Foreground="White"/>
+        <Label x:Name="timelabel" Content="1/1/1970 00:00:00" HorizontalAlignment="Left" Margin="467,0,0,0" VerticalAlignment="Top" Width="120" Height="21" FontSize="10" VerticalContentAlignment="Top" Grid.RowSpan="2"/>
     </Grid>
 </Window>
