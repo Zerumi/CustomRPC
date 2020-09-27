@@ -41,11 +41,28 @@
                 <MenuItem Header="Save Status" Click="bUpdateConfig_Click"/>
                 <MenuItem Header="Load Status" Click="bLoadStatus_Click"/>
             </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem x:Name="miGameNameHelp" Header="How to change game name?" Click="miGameNameHelp_Click"/>
+                <MenuItem x:Name="miPSize" Header="Why i can't change party size?" Click="miPSize_Click"/>
+                <MenuItem x:Name="miImgChange" Header="How to change large and small images?" Click="miImgChange_Click"/>
+                <MenuItem x:Name="miTimestFormat" Header="What date-time format is accepted to write?" Click="miTimestFormat_Click"/>
+            </MenuItem>
         </Menu>
         <Button Content="Apply changes" HorizontalAlignment="Left" Margin="467,186,0,0" Grid.Row="1" VerticalAlignment="Top" Width="100" Height="26" Click="bApply_Click"/>
         <TextBox x:Name="partySize" HorizontalAlignment="Left" Height="23" Margin="362,133,0,0" Grid.Row="1" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="14"/>
         <TextBox x:Name="partySizeMax" HorizontalAlignment="Left" Height="23" Margin="391,133,0,0" Grid.Row="1" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="23"/>
-        <Label x:Name="updatelabel" Content="Последнее обновление статуса на стороне Discord: Не обновлялось" HorizontalAlignment="Left" Height="25" Margin="164,15.2,0,0" Grid.Row="1" VerticalAlignment="Top" Width="403" HorizontalContentAlignment="Right" Foreground="White"/>
+        <Label x:Name="updatelabel" Content="Latest status update on the Discord side: Not updated" HorizontalAlignment="Left" Height="25" Margin="164,15.2,0,0" Grid.Row="1" VerticalAlignment="Top" Width="403" HorizontalContentAlignment="Right" Foreground="White"/>
         <Label x:Name="timelabel" Content="1/1/1970 00:00:00" HorizontalAlignment="Left" Margin="467,0,0,0" VerticalAlignment="Top" Width="120" Height="21" FontSize="10" VerticalContentAlignment="Top" Grid.RowSpan="2"/>
+        <Label HorizontalAlignment="Left" Margin="10,231.2,0,0" Grid.Row="1" VerticalAlignment="Top" Width="150">
+            <Hyperlink NavigateUri="https://discord.com/developers/applications/" RequestNavigate="Hyperlink_RequestNavigate">
+                *Discord developer portal*
+            </Hyperlink>
+        </Label>
+        <Label HorizontalAlignment="Left" Margin="165,231.2,0,0" Grid.Row="1" VerticalAlignment="Top" Width="237">
+            <Hyperlink x:Name="linktoapp" RequestNavigate="Hyperlink_RequestNavigate">
+                *If you own application, you can click here*
+            </Hyperlink>
+        </Label>
+        <TextBlock FontSize="9.5" Foreground="White" HorizontalAlignment="Left" Margin="482,231.2,0,0" Grid.Row="1" TextWrapping="Wrap" Text="Made by Zerumi Logotype by mega kot" VerticalAlignment="Top" Height="30" Width="100"/>
     </Grid>
 </Window>

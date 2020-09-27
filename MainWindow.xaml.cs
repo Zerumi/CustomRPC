@@ -8,6 +8,8 @@ using System.Windows.Threading;
 using System.Configuration;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Reflection;
+using System.Diagnostics;
 
 namespace CustomRPC
 {
@@ -25,6 +27,7 @@ namespace CustomRPC
             notifyIcon1.ContextMenu.MenuItems.Add(ExitItem);
             notifyIcon1.DoubleClick += notifyIcon1_MouseDoubleClick;
             InitializeComponent();
+            linktoapp.NavigateUri = new Uri($@"https://discord.com/developers/applications/{client_id}");
             load();
             timer.Tick += TimerTick;
             timer.Interval = new TimeSpan(0, 0, 1);
@@ -150,7 +153,7 @@ namespace CustomRPC
 
             client.SetPresence(presence);
 
-            updatelabel.Content = $"Последнее обновление статуса на стороне Discord: {DateTime.Now}";
+            updatelabel.Content = $"Latest status update on the Discord side: {DateTime.Now}";
         }
 
         bool? iselapsed = null;
@@ -328,7 +331,7 @@ namespace CustomRPC
 
         private NotifyIcon notifyIcon1 = new NotifyIcon()
         {
-            Icon = new Icon(SystemIcons.Application, 40, 40)
+            Icon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location)
         };
 
         private void notifyIcon1_MouseDoubleClick(object sender, EventArgs e)
@@ -383,14 +386,76 @@ namespace CustomRPC
             }
         }
 
-        private void MenuItem_Checked(object sender, RoutedEventArgs e)
+        private void miGameNameHelp_Click(object sender, RoutedEventArgs e)
         {
-
+            System.Windows.Forms.MessageBox.Show("Due to Discord restrictions, in order to change the name of the game, you need to create your application on their developer portal (https://discord.com/developers/applications/).\n" + 
+                "1) Create an application. Go to the discord developer portal hyperlink, click \"New Application\" at the top, enter a name(this will be the name of your game) or you can take an existing application if you have one.\n" + 
+                "2) Next, you will need to copy the \"Client ID\" field. In the program, select \"RPC -> Update Application ID\" and paste the recently copied ID.\n" + 
+                "3) Restart the program.");
         }
 
-        private void MenuItem_Unchecked(object sender, RoutedEventArgs e)
+        private void miPSize_Click(object sender, RoutedEventArgs e)
         {
+            System.Windows.Forms.MessageBox.Show("For change party size, you need to have this party.\n" +
+                "1) In the program select \"RPC -> Update PartyID\" and write something to field. Press Enter/Ok.\n" +
+                "2) Now you can change party size");
+        }
 
+        private void miImgChange_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.MessageBox.Show("Due to Discord restrictions, in order to change the large and small status image, you need to change your app on their developer portal (https://discord.com/developers/applications/).\n" +
+                "1) Open your application on the dev portal(how to create it, see the section \"How to change game name?\").\n" +
+                "2) On the left in the list, select the item \"Rich Presence\".\n" +
+                "3) Scroll down the page to find the \"Rich Presence Assets\" section.Below click the \"Add Image (s)\"\n" +
+                "3) Select an image on your computer(IMPORTANT!The image must be larger than 512x512)\n" +
+                "4) Select the name of the image(you cannot change the name after saving)\n" +
+                "5) In the program select \"RPC -> Update Large / Small Image\" and enter the name of the image that you uploaded there. You can also enter the name of the image that has already been uploaded before.");
+        }
+
+        private void miTimestFormat_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.MessageBox.Show("Parsing converts the string representation of a date and time to a DateTime value. Typically, date and time strings have two different usages in applications:\n\n" +
+                "A date and time takes a variety of forms and reflects the conventions of either the current culture or a specific culture. For example, an application allows a user whose current culture is en - US to input a date value as \"12/15/2013\" or \"December 15, 2013\". It allows a user whose current culture is en - gb to input a date value as \"15/12/2013\" or \"15 December 2013.\"\n\n" +
+                "A date and time is represented in a predefined format.For example, an application serializes a date as \"20130103\" independently of the culture on which the app is running. An application may require dates be input in the current culture's short date format.");
+        }
+
+        #region RuHelp
+        //        private void RuGameNameHelp()
+        //        {
+        //            System.Windows.Forms.MessageBox.Show("Из-за ограничений Discord, чтобы изменить название игры, вам надо создать свое приложение на их портале разработчиков (https://discord.com/developers/applications/).
+        //1) Создайте приложение, нажав сверху "New Application", введите название(это и будет название вашей игры) или вы можете взять существующее приложение если у вас такое есть.
+        //2) Далее вам нужно будет скопировать поле "Client ID".В программе, выберите "RPC -> Update Application ID" и вставьте недавно скопированный ID.
+        //3) Перезагрузите программу.");
+        //        }
+
+        //        private void RuPSize1()
+        //        {
+        //            System.Windows.Forms.MessageBox.Show("Test");
+        //        }
+
+        //        private void RuImgChange()
+        //        {
+        //            System.Windows.Forms.MessageBox.Show("Из-за ограничений Discord, чтобы изменить большое и маленькое изображение в статусе, вам надо изменить свое приложение на их портале разработчиков (https://discord.com/developers/applications/).
+        //1) Откройте свое приложение на портале(как его создать, см.раздел "How to change game name?").
+        //2) Слева в списке выберете пункт "Rich Presence".
+        //3) Промотайте страницу вниз, найдите раздел "Rich Presence Assets".Ниже нажмите кнопку "Add Image(s)"
+        //3) Выберете изображение на вашем компьютере(ВАЖНО! Изображение должно быть по размеру больше чем 512x512)
+        //4) Выберете название изображения(Вы не сможете поменять название после сохранения)
+        //5) В программе выберите "RPC -> Update Large/Small Image" и введите туда название изображения, которое вы загрузили.Вы также можете ввести название того изображения которое уже загрузили до этого.");
+        //        }
+
+        //        private void RuTimestFormat()
+        //        {
+        //            System.Windows.Forms.MessageBox.Show("При синтаксическом анализе преобразуется строковое представление даты и времени в DateTime значение. Как правило, строки даты и времени имеют два разных варианта использования в приложениях:
+        //Дата и время принимают различные формы и отражают соглашения о текущей культуре или определенной культуре.Например, приложение позволяет пользователю, имеющему текущий язык и региональные параметры en - US, ввести значение даты "12/15/2013" или "15 декабря 2013".Он позволяет пользователю, чей текущий язык и региональные параметры — en - GB, ввести значение даты "15/12/2013" или "15 декабря 2013".
+        //Дата и время представлены в заранее определенном формате.Например, приложение сериализует дату как "20130103" независимо от языка и региональных параметров, на которых выполняется приложение.Для приложения может требоваться ввод дат в кратком формате даты текущего языка и региональных параметров.");
+        //        }
+        #endregion
+
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            Process.Start(e.Uri.AbsoluteUri);
+            e.Handled = true;
         }
     }
 }
