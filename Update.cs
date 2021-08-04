@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace CustomRPC
 {
-    static class Update
+    public static class Update
     {
         public static void AppID(MainWindow window)
         {
             window.client_id = window.tbArgument.Text;
-            MessageBox.Show("Для применения изменений перезагрузите программу (сохраните конфигурацию)", "Custom RPC", MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+            MessageBox.Show("To apply the changes, restart the program (save the configuration)", "Custom RPC", MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
         }
         public static void LargeImg(MainWindow window)
         {

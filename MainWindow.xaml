@@ -25,36 +25,40 @@
         <Ellipse x:Name="SmallImage" Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="36" Margin="121,168,0,0" Stroke="Black" VerticalAlignment="Top" Width="35" Grid.Row="1"/>
         <TextBox x:Name="tbSmallImgText" HorizontalAlignment="Left" Height="23" Margin="54,141,0,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" Width="83" Grid.Row="1"/>
         <Label x:Name="lTitle" Content="" HorizontalAlignment="Left" Margin="6,10,0,0" Grid.Row="2" VerticalAlignment="Top" Foreground="White" Height="27" Width="576"/>
-        <TextBox x:Name="tbArgument" HorizontalAlignment="Left" Height="24" Margin="10,42,0,0" Grid.Row="2" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" Width="572" Visibility="Hidden" KeyDown="tbArgument_KeyDown"/>
-        <Button x:Name="bOK" Content="OK" HorizontalAlignment="Left" Margin="10,71,0,0" Grid.Row="2" VerticalAlignment="Top" Width="100" Height="30" Click="bOK_Click" Visibility="Hidden"/>
+        <TextBox x:Name="tbArgument" HorizontalAlignment="Left" Height="24" Margin="10,42,0,0" Grid.Row="2" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" Width="572" Visibility="Hidden" KeyDown="UItbArgument_KeyDown"/>
+        <Button x:Name="bOK" Content="OK" HorizontalAlignment="Left" Margin="10,71,0,0" Grid.Row="2" VerticalAlignment="Top" Width="100" Height="30" Click="UIbOK_Click" Visibility="Hidden"/>
         <Menu HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <MenuItem Header="RPC">
-                <MenuItem Header="Update ApplicationID" Click="bUpdateRPC_Click"/>
-                <MenuItem Header="Update Large Image" Click="bUpdateLargeImg_Click"/>
-                <MenuItem Header="Update Small Image" Click="bUpdateSmallImg_Click"/>
-                <MenuItem Header="Update Timestamp" Click="bUpdateTimestamp_Click"/>
-                <MenuItem Header="Update PartyID" Click="bUpdatePartyID_Click"/>
-                <MenuItem Header="Update Spectate code" Click="bSetSpectate_Click"/>
-                <MenuItem Header="Update Ask to Join code" Click="bSetAskToJoin_Click"/>
+            <MenuItem x:Name="mRPC" Header="RPC">
+                <MenuItem x:Name="mRPCappID" Header="Update ApplicationID" Click="UIbUpdateRPC_Click"/>
+                <MenuItem x:Name="mRPClargeIMG" Header="Update Large Image" Click="UIbUpdateLargeImg_Click"/>
+                <MenuItem x:Name="mRPCsmallIMG" Header="Update Small Image" Click="UIbUpdateSmallImg_Click"/>
+                <MenuItem x:Name="mRPCtimestamp" Header="Update Timestamp" Click="UIbUpdateTimestamp_Click"/>
+                <MenuItem x:Name="mRPCpartyID" Header="Update PartyID" Click="UIbUpdatePartyID_Click"/>
+                <MenuItem x:Name="mRPCspecCD" Header="Update Spectate code" Click="UIbSetSpectate_Click"/>
+                <MenuItem x:Name="mRPCask2joinCD" Header="Update Ask to Join code" Click="UIbSetAskToJoin_Click"/>
             </MenuItem>
-            <MenuItem Header="Config">
-                <MenuItem Header="Save Status" Click="bUpdateConfig_Click"/>
-                <MenuItem Header="Load Status" Click="bLoadStatus_Click"/>
+            <MenuItem x:Name="mConfig" Header="Config">
+                <MenuItem x:Name="mcSave" Header="Save Status" Click="UIbUpdateConfig_Click"/>
+                <MenuItem x:Name="mcLoad" Header="Load Status" Click="UIbLoadStatus_Click"/>
             </MenuItem>
-            <MenuItem Header="Help">
-                <MenuItem x:Name="miGameNameHelp" Header="How to change game name?" Click="miGameNameHelp_Click"/>
-                <MenuItem x:Name="miPSize" Header="Why i can't change party size?" Click="miPSize_Click"/>
-                <MenuItem x:Name="miImgChange" Header="How to change large and small images?" Click="miImgChange_Click"/>
-                <MenuItem x:Name="miTimestFormat" Header="What date-time format is accepted to write?" Click="miTimestFormat_Click"/>
+            <MenuItem x:Name="mHelp" Header="Help">
+                <MenuItem x:Name="miGameNameHelp" Header="How to change game name?" Click="UImiGameNameHelp_Click"/>
+                <MenuItem x:Name="miPSize" Header="Why i can't change party size?" Click="UImiPSize_Click"/>
+                <MenuItem x:Name="miImgChange" Header="How to change large and small images?" Click="UImiImgChange_Click"/>
+                <MenuItem x:Name="miTimestFormat" Header="What date-time format is accepted to write?" Click="UImiTimestFormat_Click"/>
+            </MenuItem>
+            <MenuItem x:Name="mLang" Header="Language">
+                <MenuItem x:Name="mlEng" Header="English" IsCheckable="True" IsChecked="False" Checked="mlEng_Checked" Unchecked="mlEng_Unchecked"/>
+                <MenuItem x:Name="mlRus" Header="Русский" IsCheckable="True" IsChecked="False" Checked="mlRus_Checked" Unchecked="mlRus_Unchecked"/>
             </MenuItem>
         </Menu>
-        <Button Content="Apply changes" HorizontalAlignment="Left" Margin="467,186,0,0" Grid.Row="1" VerticalAlignment="Top" Width="100" Height="26" Click="bApply_Click"/>
+        <Button x:Name="bApply"  Content="Apply changes" HorizontalAlignment="Left" Margin="467,186,0,0" Grid.Row="1" VerticalAlignment="Top" Width="100" Height="26" Click="UIbApply_Click"/>
         <TextBox x:Name="partySize" HorizontalAlignment="Left" Height="23" Margin="362,133,0,0" Grid.Row="1" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="14"/>
         <TextBox x:Name="partySizeMax" HorizontalAlignment="Left" Height="23" Margin="391,133,0,0" Grid.Row="1" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="23"/>
         <Label x:Name="updatelabel" Content="Latest status update on the Discord side: Not updated" HorizontalAlignment="Left" Height="25" Margin="164,15.2,0,0" Grid.Row="1" VerticalAlignment="Top" Width="403" HorizontalContentAlignment="Right" Foreground="White"/>
         <Label x:Name="timelabel" Content="1/1/1970 00:00:00" HorizontalAlignment="Left" Margin="467,0,0,0" VerticalAlignment="Top" Width="120" Height="21" FontSize="10" VerticalContentAlignment="Top" Grid.RowSpan="2"/>
         <Label HorizontalAlignment="Left" Margin="10,231.2,0,0" Grid.Row="1" VerticalAlignment="Top" Width="150">
-            <Hyperlink NavigateUri="https://discord.com/developers/applications/" RequestNavigate="Hyperlink_RequestNavigate">
+            <Hyperlink x:Name="hlDDP" NavigateUri="https://discord.com/developers/applications/" RequestNavigate="Hyperlink_RequestNavigate">
                 *Discord developer portal*
             </Hyperlink>
         </Label>

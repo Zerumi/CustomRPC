@@ -7,7 +7,6 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using System.Configuration;
 using System.Windows.Forms;
-using System.Drawing;
 using System.Reflection;
 using System.Diagnostics;
 
@@ -18,21 +17,56 @@ namespace CustomRPC
     /// </summary>
     public partial class MainWindow : Window
     {
+        public IUserInfo userInfo = new EnUserInfo();
+
+        System.Windows.Controls.MenuItem[] menuItems { get; set; }
+
         public MainWindow()
         {
             notifyIcon1.Visible = true;
-            notifyIcon1.ContextMenu = new System.Windows.Forms.ContextMenu();
-            var ExitItem = new System.Windows.Forms.MenuItem() { Text = "Exit" };
+            notifyIcon1.ContextMenu = new ContextMenu();
+            MenuItem ExitItem = new MenuItem() { Text = userInfo.Exit() };
             ExitItem.Click += ExitItem_Click;
             notifyIcon1.ContextMenu.MenuItems.Add(ExitItem);
-            notifyIcon1.DoubleClick += notifyIcon1_MouseDoubleClick;
+            notifyIcon1.DoubleClick += NotifyIcon1_MouseDoubleClick;
             InitializeComponent();
             linktoapp.NavigateUri = new Uri($@"https://discord.com/developers/applications/{client_id}");
-            load();
+            menuItems = new System.Windows.Controls.MenuItem[] { mlEng, mlRus };
+            menuItems[userInfo.LangIndex].IsChecked = true;
+            Load();
             timer.Tick += TimerTick;
             timer.Interval = new TimeSpan(0, 0, 1);
             LoadStatus();
             UpdatePresence(TimeStamp, tbDetails.Text, tbState.Text, LargeImg, tbLargeImgText.Text, SmallImg, tbSmallImgText.Text);
+        }
+
+        private DateTime? latestDateTime = null;
+
+        private void LoadTranslate()
+        {
+            mRPC.Header = userInfo.UImRPC();
+            mRPCappID.Header = userInfo.UImRPCappID();
+            mRPClargeIMG.Header = userInfo.UImRPClargeIMG();
+            mRPCsmallIMG.Header = userInfo.UImRPCsmallIMG();
+            mRPCtimestamp.Header = userInfo.UImRPCtimestamp();
+            mRPCpartyID.Header = userInfo.UImRPCpartyID();
+            mRPCspecCD.Header = userInfo.UImRPCspecCD();
+            mRPCask2joinCD.Header = userInfo.UImRPCask2joinCD();
+            mConfig.Header = userInfo.UImConfig();
+            mcLoad.Header = userInfo.UImcLoad();
+            mcSave.Header = userInfo.UImcSave();
+            mHelp.Header = userInfo.UImHelp();
+            miGameNameHelp.Header = userInfo.UImGameNameHelp();
+            miImgChange.Header = userInfo.UImImgChange();
+            miPSize.Header = userInfo.UImPSize();
+            miTimestFormat.Header = userInfo.UImTimestFormat();
+            mLang.Header = userInfo.UImLang();
+            bApply.Content = userInfo.UIbApply();
+            updatelabel.Content = userInfo.LatestStatusUpdate() + " " + (latestDateTime?.ToString() ?? userInfo.TimeNull());
+            hlDDP.Inlines.Clear();
+            linktoapp.Inlines.Clear();
+            hlDDP.Inlines.Add(userInfo.UIhlDDP());
+            linktoapp.Inlines.Add(userInfo.UIhlLinktoapp());
         }
 
         private void ExitItem_Click(object sender, EventArgs e)
@@ -40,11 +74,11 @@ namespace CustomRPC
             System.Windows.Application.Current.Shutdown();
         }
 
-        static System.Collections.Specialized.NameValueCollection settings = ConfigurationManager.AppSettings;
+        static readonly System.Collections.Specialized.NameValueCollection settings = ConfigurationManager.AppSettings;
 
         public string client_id = settings.Get("ApplicationID");
 
-        DispatcherTimer timer = new DispatcherTimer();
+        readonly DispatcherTimer timer = new DispatcherTimer();
 
         public DiscordRpcClient client;
 
@@ -64,7 +98,7 @@ namespace CustomRPC
 
         public bool isStartTime = true;
 
-        string sendname = null;
+        private string sendname = null;
 
         RichPresence presence = new RichPresence();
 
@@ -115,21 +149,21 @@ namespace CustomRPC
             }
         }
 
-        public void load()
+        public void Load()
         {
             client = new DiscordRpcClient(client_id)
             {
                 SkipIdenticalPresence = true,
             };
 
-            client.OnReady += onReady;
+            client.OnReady += OnReady;
 
             client.OnError += Client_OnError;
 
             client.OnConnectionFailed += (_, __) =>
             {
                 client.Deinitialize();
-                System.Windows.MessageBox.Show("Клиент был отключен: " + __.FailedPipe);
+                System.Windows.MessageBox.Show(userInfo.ClientDisconnected() + " " + __.FailedPipe);
             };
 
             client.Initialize();
@@ -137,23 +171,27 @@ namespace CustomRPC
 
         private void Client_OnError(object sender, ErrorMessage args)
         {
-            System.Windows.MessageBox.Show("Что-то пошло не так...\n" + args.Message);
+            System.Windows.MessageBox.Show(userInfo.ClientError() + "\n" + args.Message);
         }
 
-        private void onReady(object _, ReadyMessage __)
+        private void OnReady(object _, ReadyMessage __)
         {
             timer.Start();
-            updateStatus();
+            UpdateStatus();
         }
 
-        private void updateStatus()
+        private async void UpdateStatus()
         {
             if (!client.IsInitialized)
                 return;
 
             client.SetPresence(presence);
 
-            updatelabel.Content = $"Latest status update on the Discord side: {DateTime.Now}";
+            latestDateTime = DateTime.Now;
+
+            await Dispatcher.BeginInvoke(new Action(() => {
+                updatelabel.Content = userInfo.LatestStatusUpdate() + " " + latestDateTime;
+            }));
         }
 
         bool? iselapsed = null;
@@ -169,7 +207,7 @@ namespace CustomRPC
                     {
                         Start = TimeStamp
                     };
-                    updateStatus();
+                    UpdateStatus();
                 }
                 else if (!iselapsed.Value) // remaining
                 {
@@ -178,7 +216,7 @@ namespace CustomRPC
                     {
                         Start = TimeStamp
                     };
-                    updateStatus();
+                    UpdateStatus();
                 }
                 lTimestamp.Content = $"{(Convert.ToInt32(DateTime.UtcNow.Subtract(TimeStamp).Hours) == 0 ? Convert.ToString(Convert.ToInt32(DateTime.UtcNow.Subtract(TimeStamp).Minutes)) : Convert.ToString(Convert.ToString(Convert.ToInt32(DateTime.UtcNow.Subtract(TimeStamp).Hours))) + ":" + Convert.ToString(Convert.ToInt32(DateTime.UtcNow.Subtract(TimeStamp).Minutes)))}:{Convert.ToInt32(DateTime.UtcNow.Subtract(TimeStamp).Seconds)} elapsed";
             }
@@ -191,7 +229,7 @@ namespace CustomRPC
                     {
                         End = TimeStamp
                     };
-                    updateStatus();
+                    UpdateStatus();
                 }
                 else if (iselapsed.Value) // elapsed
                 {
@@ -200,19 +238,19 @@ namespace CustomRPC
                     {
                         End = TimeStamp
                     };
-                    updateStatus();
+                    UpdateStatus();
                 }
                 lTimestamp.Content = $"{(Convert.ToInt32(TimeStamp.Subtract(DateTime.UtcNow).Hours) == 0 ? Convert.ToString(Convert.ToInt32(TimeStamp.Subtract(DateTime.UtcNow).Minutes)) : Convert.ToString(Convert.ToString(Convert.ToInt32(TimeStamp.Subtract(DateTime.UtcNow).Hours))) + ":" + Convert.ToString(Convert.ToInt32(TimeStamp.Subtract(DateTime.UtcNow).Minutes)))}:{Convert.ToInt32(TimeStamp.Subtract(DateTime.UtcNow).Seconds)} left";
             }
         }
 
-        private void bApply_Click(object sender, RoutedEventArgs e)
+        private void UIbApply_Click(object sender, RoutedEventArgs e)
         {
             UpdatePresence(TimeStamp, tbDetails.Text, tbState.Text, LargeImg, tbLargeImgText.Text, SmallImg, tbSmallImgText.Text, PartyID, SpectateCode, AskToJoinCode);
-            updateStatus();
+            UpdateStatus();
         }
 
-        private void bLoadStatus_Click(object sender, RoutedEventArgs e)
+        private void UIbLoadStatus_Click(object sender, RoutedEventArgs e)
         {
             LoadStatus();
         }
@@ -262,52 +300,59 @@ namespace CustomRPC
         private void UpdateArg(object sender, string sendname)
         {
             lTitle.Content = (sender as System.Windows.Controls.MenuItem).Header;
+            var method = AppDomain.CurrentDomain.GetAssemblies()
+    .Select(x => x.GetTypes())
+    .SelectMany(x => x)
+    .Where(x => x.Namespace == "CustomRPC")
+    .Where(c => c.GetMethod("l" + sendname) != null)
+    .Select(c => c.GetMethod("l" + sendname)).First();
+            method.Invoke(null, new object[] { this });
             tbArgument.Visibility = Visibility.Visible;
             bOK.Visibility = Visibility.Visible;
             this.sendname = sendname;
         }
 
-        private void bUpdateConfig_Click(object sender, RoutedEventArgs e)
+        private void UIbUpdateConfig_Click(object sender, RoutedEventArgs e)
         {
             SaveStatus();
         }
 
-        private void bUpdateRPC_Click(object sender, RoutedEventArgs e)
+        private void UIbUpdateRPC_Click(object sender, RoutedEventArgs e)
         {
             UpdateArg(sender, "AppID");
         }
 
-        private void bUpdateLargeImg_Click(object sender, RoutedEventArgs e)
+        private void UIbUpdateLargeImg_Click(object sender, RoutedEventArgs e)
         {
             UpdateArg(sender, "LargeImg");
         }
 
-        private void bUpdateSmallImg_Click(object sender, RoutedEventArgs e)
+        private void UIbUpdateSmallImg_Click(object sender, RoutedEventArgs e)
         {
             UpdateArg(sender, "SmallImg");
         }
 
-        private void bUpdateTimestamp_Click(object sender, RoutedEventArgs e)
+        private void UIbUpdateTimestamp_Click(object sender, RoutedEventArgs e)
         {
             UpdateArg(sender, "Timestamp");
         }
 
-        private void bUpdatePartyID_Click(object sender, RoutedEventArgs e)
+        private void UIbUpdatePartyID_Click(object sender, RoutedEventArgs e)
         {
             UpdateArg(sender, "PartyID");
         }
 
-        private void bSetSpectate_Click(object sender, RoutedEventArgs e)
+        private void UIbSetSpectate_Click(object sender, RoutedEventArgs e)
         {
             UpdateArg(sender, "Spectate");
         }
 
-        private void bSetAskToJoin_Click(object sender, RoutedEventArgs e)
+        private void UIbSetAskToJoin_Click(object sender, RoutedEventArgs e)
         {
             UpdateArg(sender, "AskToJoin");
         }
 
-        private void bOK_Click(object sender, RoutedEventArgs e)
+        private void UIbOK_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -329,12 +374,12 @@ namespace CustomRPC
             }
         }
 
-        private NotifyIcon notifyIcon1 = new NotifyIcon()
+        private readonly NotifyIcon notifyIcon1 = new NotifyIcon()
         {
             Icon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location)
         };
 
-        private void notifyIcon1_MouseDoubleClick(object sender, EventArgs e)
+        private void NotifyIcon1_MouseDoubleClick(object sender, EventArgs e)
         {
             Show();
             WindowState = WindowState.Normal;
@@ -361,7 +406,7 @@ namespace CustomRPC
             e.Cancel = true;
         }
 
-        private void tbArgument_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void UItbArgument_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
@@ -386,76 +431,54 @@ namespace CustomRPC
             }
         }
 
-        private void miGameNameHelp_Click(object sender, RoutedEventArgs e)
+        private void UImiGameNameHelp_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.MessageBox.Show("Due to Discord restrictions, in order to change the name of the game, you need to create your application on their developer portal (https://discord.com/developers/applications/).\n" + 
-                "1) Create an application. Go to the discord developer portal hyperlink, click \"New Application\" at the top, enter a name(this will be the name of your game) or you can take an existing application if you have one.\n" + 
-                "2) Next, you will need to copy the \"Client ID\" field. In the program, select \"RPC -> Update Application ID\" and paste the recently copied ID.\n" + 
-                "3) Restart the program.");
+            userInfo.MBmiGameNameHelp();
         }
 
-        private void miPSize_Click(object sender, RoutedEventArgs e)
+        private void UImiPSize_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.MessageBox.Show("For change party size, you need to have this party.\n" +
-                "1) In the program select \"RPC -> Update PartyID\" and write something to field. Press Enter/Ok.\n" +
-                "2) Now you can change party size");
+            userInfo.MBmiPSize();
         }
 
-        private void miImgChange_Click(object sender, RoutedEventArgs e)
+        private void UImiImgChange_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.MessageBox.Show("Due to Discord restrictions, in order to change the large and small status image, you need to change your app on their developer portal (https://discord.com/developers/applications/).\n" +
-                "1) Open your application on the dev portal(how to create it, see the section \"How to change game name?\").\n" +
-                "2) On the left in the list, select the item \"Rich Presence\".\n" +
-                "3) Scroll down the page to find the \"Rich Presence Assets\" section.Below click the \"Add Image (s)\"\n" +
-                "3) Select an image on your computer(IMPORTANT!The image must be larger than 512x512)\n" +
-                "4) Select the name of the image(you cannot change the name after saving)\n" +
-                "5) In the program select \"RPC -> Update Large / Small Image\" and enter the name of the image that you uploaded there. You can also enter the name of the image that has already been uploaded before.");
+            userInfo.MBmiImgChange();
         }
 
-        private void miTimestFormat_Click(object sender, RoutedEventArgs e)
+        private void UImiTimestFormat_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.MessageBox.Show("Parsing converts the string representation of a date and time to a DateTime value. Typically, date and time strings have two different usages in applications:\n\n" +
-                "A date and time takes a variety of forms and reflects the conventions of either the current culture or a specific culture. For example, an application allows a user whose current culture is en - US to input a date value as \"12/15/2013\" or \"December 15, 2013\". It allows a user whose current culture is en - gb to input a date value as \"15/12/2013\" or \"15 December 2013.\"\n\n" +
-                "A date and time is represented in a predefined format.For example, an application serializes a date as \"20130103\" independently of the culture on which the app is running. An application may require dates be input in the current culture's short date format.");
+            userInfo.MBmiTimestFormat();
         }
-
-        #region RuHelp
-        //        private void RuGameNameHelp()
-        //        {
-        //            System.Windows.Forms.MessageBox.Show("Из-за ограничений Discord, чтобы изменить название игры, вам надо создать свое приложение на их портале разработчиков (https://discord.com/developers/applications/).
-        //1) Создайте приложение, нажав сверху "New Application", введите название(это и будет название вашей игры) или вы можете взять существующее приложение если у вас такое есть.
-        //2) Далее вам нужно будет скопировать поле "Client ID".В программе, выберите "RPC -> Update Application ID" и вставьте недавно скопированный ID.
-        //3) Перезагрузите программу.");
-        //        }
-
-        //        private void RuPSize1()
-        //        {
-        //            System.Windows.Forms.MessageBox.Show("Test");
-        //        }
-
-        //        private void RuImgChange()
-        //        {
-        //            System.Windows.Forms.MessageBox.Show("Из-за ограничений Discord, чтобы изменить большое и маленькое изображение в статусе, вам надо изменить свое приложение на их портале разработчиков (https://discord.com/developers/applications/).
-        //1) Откройте свое приложение на портале(как его создать, см.раздел "How to change game name?").
-        //2) Слева в списке выберете пункт "Rich Presence".
-        //3) Промотайте страницу вниз, найдите раздел "Rich Presence Assets".Ниже нажмите кнопку "Add Image(s)"
-        //3) Выберете изображение на вашем компьютере(ВАЖНО! Изображение должно быть по размеру больше чем 512x512)
-        //4) Выберете название изображения(Вы не сможете поменять название после сохранения)
-        //5) В программе выберите "RPC -> Update Large/Small Image" и введите туда название изображения, которое вы загрузили.Вы также можете ввести название того изображения которое уже загрузили до этого.");
-        //        }
-
-        //        private void RuTimestFormat()
-        //        {
-        //            System.Windows.Forms.MessageBox.Show("При синтаксическом анализе преобразуется строковое представление даты и времени в DateTime значение. Как правило, строки даты и времени имеют два разных варианта использования в приложениях:
-        //Дата и время принимают различные формы и отражают соглашения о текущей культуре или определенной культуре.Например, приложение позволяет пользователю, имеющему текущий язык и региональные параметры en - US, ввести значение даты "12/15/2013" или "15 декабря 2013".Он позволяет пользователю, чей текущий язык и региональные параметры — en - GB, ввести значение даты "15/12/2013" или "15 декабря 2013".
-        //Дата и время представлены в заранее определенном формате.Например, приложение сериализует дату как "20130103" независимо от языка и региональных параметров, на которых выполняется приложение.Для приложения может требоваться ввод дат в кратком формате даты текущего языка и региональных параметров.");
-        //        }
-        #endregion
 
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
             Process.Start(e.Uri.AbsoluteUri);
             e.Handled = true;
+        }
+
+        private void mlEng_Checked(object sender, RoutedEventArgs e)
+        {
+            menuItems[userInfo.LangIndex].IsChecked = false;
+            userInfo = new EnUserInfo();
+            LoadTranslate();
+        }
+
+        private void mlEng_Unchecked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void mlRus_Checked(object sender, RoutedEventArgs e)
+        {
+            menuItems[userInfo.LangIndex].IsChecked = false;
+            userInfo = new RuUserInfo();
+            LoadTranslate();
+        }
+
+        private void mlRus_Unchecked(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
